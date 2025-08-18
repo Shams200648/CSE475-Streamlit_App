@@ -12,7 +12,7 @@ import time
 # =====================
 # Paths
 # =====================
-RUNS_DIR = Path("runs_ssl")
+RUNS_DIR = Path("D:/EWU/10th Semester/CSE475/LABS/Project/Streamlit App/runs_ssl")
 st.set_page_config(page_title="Sunflower SSL Dashboard", layout="wide")
 st.title("🌻 Sunflower Image Detection in Real-Time Dashboard")
 
@@ -212,4 +212,4 @@ if results_csv.exists():
 st.subheader("🖼️ Results Image")
 if results_png.exists():
     img = Image.open(results_png)
-    st.image(img, caption="Results Image", use_column_width=True)
+    st.image(img, caption="Results Image", use_container_width=True)
