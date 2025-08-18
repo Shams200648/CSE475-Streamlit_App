@@ -14,7 +14,7 @@ import time
 # =====================
 RUNS_DIR = Path("runs_ssl")
 st.set_page_config(page_title="Sunflower SSL Dashboard", layout="wide")
-st.title("🌻 Sunflower Image Semi-Supervised Learning Dashboard")
+st.title("🌻 Sunflower Image Detection in Real-Time Dashboard")
 
 # =====================
 # Sidebar
