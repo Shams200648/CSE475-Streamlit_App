@@ -12,7 +12,7 @@ import time
 # =====================
 # Paths
 # =====================
-RUNS_DIR = Path("D:/EWU/10th Semester/CSE475/LABS/Project/Streamlit App/runs_ssl")
+RUNS_DIR = Path("runs_ssl")
 st.set_page_config(page_title="Sunflower SSL Dashboard", layout="wide")
 st.title("🌻 Sunflower Image Semi-Supervised Learning Dashboard")
 
