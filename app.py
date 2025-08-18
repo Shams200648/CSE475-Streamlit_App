@@ -12,7 +12,7 @@ import time
 # =====================
 # Paths
 # =====================
-RUNS_DIR = Path("runs_ssl")
+RUNS_DIR = Path("D:/EWU/10th Semester/CSE475/LABS/Project/Streamlit App/runs_ssl")
 st.set_page_config(page_title="Sunflower SSL Dashboard", layout="wide")
 st.title("🌻 Sunflower Image Detection in Real-Time Dashboard")
 
@@ -148,6 +148,107 @@ if uploaded_file is not None:
                 file_name=f"annotated_{file_stem}.mp4",
                 mime="video/mp4"
             )
+
+
+# =====================
+# Live Camera Detection (~30 FPS with camera selection)
+# =====================
+st.subheader("📷 Live Camera Detection (Target: 30 FPS)")
+
+# Sidebar camera options
+st.sidebar.subheader("🎥 Camera Source")
+camera_type = st.sidebar.radio(
+    "Select Camera",
+    ["Laptop Webcam", "External USB Webcam", "Mobile Camera (IP/RTSP)"]
+)
+
+# For mobile IP cam
+mobile_url = None
+if camera_type == "Mobile Camera (IP/RTSP)":
+    mobile_url = st.sidebar.text_input(
+        "Enter Camera URL (e.g., http://192.168.0.101:8080/video)",
+        value="http://192.168.0.101:8080/video"
+    )
+
+    # --------------------
+    # Test Camera URL Button
+    # --------------------
+    if st.sidebar.button("🔍 Test Camera URL"):
+        cap_test = cv2.VideoCapture(mobile_url)
+        ret, frame = cap_test.read()
+        if ret:
+            st.sidebar.success("✅ Camera is reachable!")
+            st.sidebar.image(frame[:, :, ::-1], channels="RGB", width=300)
+        else:
+            st.sidebar.error("❌ Could not reach the camera. Check URL or network.")
+        cap_test.release()
+
+start_cam = st.button("▶️ Start Live Camera")
+
+if start_cam:
+    # Choose capture source
+    if camera_type == "Laptop Webcam":
+        cap = cv2.VideoCapture(0)
+    elif camera_type == "External USB Webcam":
+        cap = cv2.VideoCapture(1)  # change index if multiple webcams
+    elif camera_type == "Mobile Camera (IP/RTSP)" and mobile_url:
+        cap = cv2.VideoCapture(mobile_url)
+    else:
+        st.error("❌ Please provide a valid camera URL or device")
+        cap = None
+
+    if cap and cap.isOpened():
+        # Resize and FPS settings
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        cap.set(cv2.CAP_PROP_FPS, 30)
+
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            frame_placeholder = st.empty()
+        with col2:
+            stop_cam = st.button("⏹️ Stop Camera")
+            fps_text = st.empty()
+
+        prev_time = time.time()
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                st.warning("⚠️ Could not read frame. Check camera or URL.")
+                break
+
+            # Resize for faster inference
+            frame = cv2.resize(frame, (640, 480))
+
+            # Run YOLO detection
+            results = model(frame, stream=True, conf=conf_threshold, verbose=False)
+            for r in results:
+                annotated_frame = r.plot(line_width=2, font_size=12)
+
+            # FPS calculation
+            curr_time = time.time()
+            fps = 1 / (curr_time - prev_time)
+            prev_time = curr_time
+
+            # Show annotated frame
+            frame_placeholder.image(
+                annotated_frame[:, :, ::-1], channels="RGB", width=600
+            )
+
+            # Show FPS
+            fps_text.markdown(f"**FPS:** {fps:.1f}")
+
+            # Lock to ~30 FPS
+            elapsed = time.time() - curr_time
+            wait_time = max(0, (1/30) - elapsed)
+            time.sleep(wait_time)
+
+            if stop_cam:
+                break
+
+        cap.release()
+        st.success("✅ Camera stopped")
 
 
 # =====================
