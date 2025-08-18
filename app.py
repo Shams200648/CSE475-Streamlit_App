@@ -166,8 +166,8 @@ camera_type = st.sidebar.radio(
 mobile_url = None
 if camera_type == "Mobile Camera (IP/RTSP)":
     mobile_url = st.sidebar.text_input(
-        "Enter Camera URL (e.g., http://192.168.0.101:8080/video)",
-        value="http://192.168.0.101:8080/video"
+        "Enter Camera URL (e.g., https://e8b8946cbe3f.ngrok-free.app)",
+        value="https://e8b8946cbe3f.ngrok-free.app"
     )
 
     # --------------------
