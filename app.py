@@ -167,7 +167,7 @@ mobile_url = None
 if camera_type == "Mobile Camera (IP/RTSP)":
     mobile_url = st.sidebar.text_input(
         "Enter Camera URL (e.g., https://e8b8946cbe3f.ngrok-free.app)",
-        value="https://e8b8946cbe3f.ngrok-free.app"
+        value="https://e8b8946cbe3f.ngrok-free.app/video"
     )
 
     # --------------------
